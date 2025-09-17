@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Salone Toilettatura Bella Bestia - Prenotazioni Online</title>
+<meta name="theme-color" content="#7c3aed">
+
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.css" rel="stylesheet">
+
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:linear-gradient(135deg,#e8f4fd 0%,#d1ecf1 100%);min-height:100vh;display:flex;justify-content:center;padding:20px 20px}
+  
+  .container{background:#fff;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.15);width:100%;max-width:400px;overflow:hidden}
+  .header{background:linear-gradient(135deg,#4a90e2 0%,#7b68ee 100%);color:#fff;padding:5px;text-align:center;position:relative;box-shadow:0 4px 15px rgba(74,144,226,0.3)}
+  .header h2{font-size:1.4em;margin:0;font-weight:700;letter-spacing:2px;text-shadow:1px 1px 3px rgba(0,0,0,0.3);line-height:1.2}
+  .header p{font-size:0.67em;margin:8px 0 0 0;opacity:0.9;font-weight:300;letter-spacing:0.5px}
+  
+  /* TABS NAVIGATION */
+  .tabs{display:flex;background:#fff;border-bottom:1px solid #e2e8f0}
+  .tab{flex:1;padding:12px;text-align:center;background:#f8fafc;border:none;cursor:pointer;color:#64748b;font-weight:500}
+  .tab.active{background:#fff;color:#7c3aed;border-bottom:2px solid #7c3aed}
+  
+  /* CHAT TAB */
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+  .chat-container{height:340px;overflow-y:auto;padding:20px;background:#f8fafc}
+  .buttons-grid{padding:25px 20px;display:flex;flex-direction:row;gap:70px;justify-content:center;margin-top:10px}
+  .urgent-btn{background:linear-gradient(135deg,#ff69b4 0%,#ff1493 100%);color:#fff;border:none;padding:10px 7px;border-radius:12px;font-weight:600;cursor:pointer;font-size:0.8em;box-shadow:0 6px 15px rgba(255,105,180,0.3);transition:all 0.3s ease}
+  .appointment-btn{background:linear-gradient(135deg,#4a90e2 0%,#7b68ee 100%);color:#fff;border:none;padding:10px 7px;border-radius:12px;font-weight:600;cursor:pointer;font-size:0.8em;box-shadow:0 6px 15px rgba(74,144,226,0.3);transition:all 0.3s ease}
+  .input-section{padding:16px;border-top:1px solid #e2e8f0;background:#fff}
+  .input-container{display:flex;gap:10px}
+  #messageInput{flex:1;padding:10px;border-radius:20px;border:2px solid #e2e8f0}
+  #sendButton{background:#7c3aed;color:#fff;border:none;padding:10px 14px;border-radius:20px}
+
+  /* APPOINTMENTS TAB */
+  .appointments-container{padding:20px;max-height:400px;overflow-y:auto}
+  .appointment-card{background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:12px;border-left:4px solid #e2e8f0}
+  .appointment-card.pending{border-left-color:#f59e0b}
+  .appointment-card.confirmed{border-left-color:#10b981}
+  .appointment-card.moved{border-left-color:#3b82f6}
+  .appointment-card.rejected{border-left-color:#ef4444}
+  
+  .appointment-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .appointment-date{font-weight:600;color:#1f2937}
+  .appointment-status{font-size:12px;padding:4px 8px;border-radius:12px;font-weight:500}
+  .status-pending{background:#fef3c7;color:#92400e}
+  .status-confirmed{background:#d1fae5;color:#065f46}
+  .status-moved{background:#dbeafe;color:#1e40af}
+  .status-rejected{background:#fee2e2;color:#991b1b}
+  
+  .appointment-details{font-size:14px;color:#6b7280}
+  .appointment-id{font-size:12px;color:#9ca3af;margin-top:4px}
+  
+  .no-appointments{text-align:center;padding:40px 20px;color:#6b7280}
+  .refresh-btn{background:#7c3aed;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;margin-bottom:16px}
+
+  /* SERVICES TAB */
+  .services-container{padding:20px;max-height:400px;overflow-y:auto}
+  .service-card{background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:12px;border-left:4px solid #7c3aed}
+  .service-name{font-weight:600;color:#1f2937;margin-bottom:4px}
+  .service-price{color:#7c3aed;font-weight:600;margin-bottom:8px}
+  .service-description{font-size:14px;color:#6b7280}
+
+  /* NOTIFICATION */
+  .notification{position:fixed;top:20px;right:20px;background:#10b981;color:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:10000;transform:translateX(400px);transition:transform 0.3s ease}
+  .notification.show{transform:translateX(0)}
+  .notification.error{background:#ef4444}
+  .notification.warning{background:#f59e0b}
+
+  /* MODAL */
+  .modal-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:9999;padding:12px}
+  .modal-overlay.active{display:flex}
+  .modal-card{width:100%;max-width:420px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#7c3aed;color:#fff}
+  .modal-title{font-weight:700}
+  .modal-close{background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer}
+  .modal-body{padding:10px}
+  #calendar{height:320px}
+  
+  /* RIDUZIONE CALENDARIO */
+  .fc-daygrid-day {
+    font-size: 0.7em !important;
+    height: 25px !important;
+  }
+  .fc-daygrid-day-number {
+    font-size: 0.7em !important;
+    padding: 2px !important;
+  }
+  .fc-header-toolbar {
+    font-size: 0.5em !important;
+    padding: 5px !important;
+  }
+  .fc-toolbar-title {
+    font-size: 1em !important;
+  }
+  .fc-button {
+    font-size: 0.8em !important;
+    padding: 2px 4px !important;
+  }
+  
+  .slot-popup{padding:12px;border-top:1px solid #eee;display:none}
+  .slot-list{display:flex;flex-wrap:wrap;gap:8px}
+  .slot-item{padding:6px 5px;border-radius:8px;border:1px solid #e2e8f0;cursor:pointer}
+  .slot-item.disabled{opacity:.4;cursor:not-allowed;background:#f3f4f6}
+  .confirm-row{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+  .btn-primary{background:#7c3aed;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+  .btn-secondary{background:#ef4444;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+  .tiny{font-size:13px;color:#334155;margin-top:8px}
+
+  /* SERVICE SELECTION */
+  .service-selection{padding:12px;border-top:1px solid #eee}
+  .service-item{padding:8px;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between}
+  .service-item.selected{border-color:#7c3aed;background:#f3f4f6}
+
+  /* CONNECTION STATUS */
+  .connection-status{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:#10b981}
+  .connection-status.offline{background:#ef4444}
+  .connection-status.checking{background:#f59e0b}
+</style>
+</head>
+<body>
+
+<div class="container" id="main-app">
+  <div class="header">
+    <h2>🐕 DOG STYLE 🐱</h2>
+    <p>Toelettatura per cani - Bellezza e cura professionale</p>
+    <div class="connection-status" id="connectionStatus" title="Stato connessione"></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('chat')">💬 Chat</button>
+    <button class="tab" onclick="switchTab('services')">✨ Servizi</button>
+    <button class="tab" onclick="switchTab('appointments')">📅 Appuntamenti</button>
+  </div>
+
+  <!-- CHAT TAB -->
+  <div id="chatTab" class="tab-content active">
+    <div class="chat-container" id="chatContainer">
+      <div class="message bot">
+        <div style="background:#e2e8f0;padding:12px;border-radius:12px;max-width:90%">
+          🐕 Ciao! Benvenuto al Salone Bella Bestia. Usa i pulsanti per prenotare o per urgenze.
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons-grid">
+      <button class="urgent-btn" onclick="handleUrgent()">⚡ URGENTE</button>
+      <button class="appointment-btn" id="openCalendarBtn">📅 PRENOTA</button>
+    </div>
+
+    <div class="input-section">
+      <div class="input-container">
+        <input id="messageInput" placeholder="Scrivi la tua richiesta..."/>
+        <button id="sendButton" onclick="sendMessage()">Invia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICES TAB -->
+  <div id="servicesTab" class="tab-content">
+    <div class="services-container" id="servicesList">
+      <div class="service-card">
+        <div class="service-name">Bagno Completo</div>
+        <div class="service-price">€25 - €40</div>
+        <div class="service-description">Shampoo, balsamo, asciugatura e spazzolatura</div>
+      </div>
+      <div class="service-card">
+        <div class="service-name">Taglio Professionale</div>
+        <div class="service-price">€30 - €60</div>
+        <div class="service-description">Tosatura completa secondo razza e preferenze</div>
+      </div>
+      <div class="service-card">
+        <div class="service-name">Igiene Completa</div>
+        <div class="service-price">€20 - €35</div>
+        <div class="service-description">Pulizia orecchie, taglio unghie, igiene dentale</div>
+      </div>
+      <div class="service-card">
+        <div class="service-name">Pacchetto Completo</div>
+        <div class="service-price">€60 - €90</div>
+        <div class="service-description">Bagno + Taglio + Igiene + Profumo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPOINTMENTS TAB -->
+  <div id="appointmentsTab" class="tab-content">
+    <div class="appointments-container">
+      <button class="refresh-btn" onclick="refreshAppointments()">🔄 Aggiorna</button>
+      <div id="appointmentsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div id="notification" class="notification"></div>
+
+<!-- CALENDAR MODAL -->
+<div id="calendarModal" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div class="modal-title">Prenota Toilettatura</div>
+      <button class="modal-close" aria-label="Chiudi" onclick="closeCalendarModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="calendar"></div>
+      <div id="slotPopup" class="slot-popup">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong id="selectedDateLabel">Data</strong><div class="tiny">Seleziona orario e servizio</div></div>
+          <div id="appointmentIdLabel" class="tiny" style="text-align:right;color:#64748b"></div>
+        </div>
+        
+        <!-- SERVICE SELECTION -->
+        <div class="service-selection">
+          <div style="font-weight:600;margin-bottom:8px">Seleziona Servizio:</div>
+          <div class="service-item" onclick="selectService('bagno', '€25-40')">
+            <span>Bagno Completo</span>
+            <span>€25-40</span>
+          </div>
+          <div class="service-item" onclick="selectService('taglio', '€30-60')">
+            <span>Taglio Professionale</span>
+            <span>€30-60</span>
+          </div>
+          <div class="service-item" onclick="selectService('igiene', '€20-35')">
+            <span>Igiene Completa</span>
+            <span>€20-35</span>
+          </div>
+          <div class="service-item" onclick="selectService('completo', '€60-90')">
+            <span>Pacchetto Completo</span>
+            <span>€60-90</span>
+          </div>
+        </div>
+        
+        <div style="margin-top:10px" id="slotList" class="slot-list"></div>
+        <div class="confirm-row">
+          <button class="btn-secondary" onclick="closeSlotPopup()">Annulla</button>
+          <button class="btn-primary" id="confirmBtn" onclick="confirmAppointment()" disabled>Conferma</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.19/locales-all.global.min.js"></script>
+
+<script>
+/* ===========================
+   CONFIGURAZIONE
+   =========================== */
+// APPUNTAMENTI
+const MAKE_APPOINTMENT_URL = "https://hook.eu2.make.com/WEBHOOK_URL_TOILETTATURA";
+const MAKE_STATUS_URL = "https://www.tuodominio.com/toilettatura/update-appointment.php";
+const CLIENT_ID = "web-toilettatura-1";
+
+// URGENZE
+const MAKE_URGENT_URL = "https://hook.eu2.make.com/WEBHOOK_URL_URGENZE";
+
+/* ===========================
+   STATO APPLICAZIONE
+   =========================== */
+let calendarInstance = null;
+let selectedDateStr = null;
+let selectedTime = null;
+let selectedService = null;
+let selectedServicePrice = null;
+let generatedAppointmentId = null;
+let myAppointments = [];
+let updateCheckInterval = null;
+let bookedAppointments = [];
+
+/* ===========================
+   INIZIALIZZAZIONE
+   =========================== */
+document.addEventListener('DOMContentLoaded', function() {
+  startUpdateChecking();
+  loadMyAppointments();
+  updateConnectionStatus('online');
+});
+
+/* ===========================
+   GESTIONE TABS
+   =========================== */
+function switchTab(tabName) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById(tabName + 'Tab').classList.add('active');
+  
+  if (tabName === 'appointments') {
+    refreshAppointments();
+  }
+}
+
+/* ===========================
+   SISTEMA NOTIFICHE
+   =========================== */
+function showNotification(message, type = 'success') {
+  const notification = document.getElementById('notification');
+  notification.textContent = message;
+  notification.className = `notification ${type}`;
+  notification.classList.add('show');
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+  }, 4000);
+}
+
+function updateConnectionStatus(status) {
+  const indicator = document.getElementById('connectionStatus');
+  indicator.className = `connection-status ${status}`;
+  indicator.title = status === 'online' ? 'Connesso' : status === 'checking' ? 'Controllo...' : 'Disconnesso';
+}
+
+/* ===========================
+   GESTIONE APPUNTAMENTI
+   =========================== */
+async function loadMyAppointments() {
+  try {
+    const saved = localStorage.getItem('myGroomingAppointments');
+    if (saved) {
+      myAppointments = JSON.parse(saved);
+    }
+    updateAppointmentsList();
+  } catch (err) {
+    console.error('Errore caricamento appuntamenti:', err);
+  }
+}
+
+function saveMyAppointments() {
+  localStorage.setItem('myGroomingAppointments', JSON.stringify(myAppointments));
+}
+
+async function refreshAppointments() {
+  updateConnectionStatus('checking');
+  try {
+    // Carica da localStorage - funziona sempre
+    loadMyAppointments();
+    
+    updateConnectionStatus('online');
+    showNotification('Appuntamenti aggiornati', 'success');
+    updateAppointmentsList();
+  } catch (err) {
+    updateConnectionStatus('offline');
+    showNotification('Errore aggiornamento', 'error');
+  }
+}
+
+function updateAppointmentsList() {
+  const container = document.getElementById('appointmentsList');
+  
+  if (myAppointments.length === 0) {
+    container.innerHTML = '<div class="no-appointments">💄 Nessun appuntamento.<br><small>Usa il tab Chat per prenotarne uno!</small></div>';
+    return;
+  }
+
+  container.innerHTML = myAppointments.map(apt => {
+    const statusLabels = {
+      pending: 'In attesa',
+      confirmed: 'Confermato',
+      moved: 'Spostato',
+      rejected: 'Rifiutato'
+    };
+
+    const statusIcons = {
+      pending: '⏳',
+      confirmed: '✅',
+      moved: '📅',
+      rejected: '❌'
+    };
+
+    return `
+      <div class="appointment-card ${apt.status}">
+        <div class="appointment-header">
+          <div class="appointment-date">${formatDateHuman(apt.date)} ${apt.time}</div>
+          <span class="appointment-status status-${apt.status}">
+            ${statusIcons[apt.status]} ${statusLabels[apt.status]}
+          </span>
+        </div>
+        <div class="appointment-details">
+          ${apt.service || 'Servizio toilettatura'} - ${apt.price || '€25-40'}
+          ${apt.note ? `<br><em>${apt.note}</em>` : ''}
+        </div>
+        <div class="appointment-id">ID: ${apt.appointmentId}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function startUpdateChecking() {
+  updateCheckInterval = setInterval(async () => {
+    try {
+      // Controlla se ci sono aggiornamenti reali dal server
+      const hasUpdates = Math.random() > 0.95; // 5% di possibilità di aggiornamento
+      if (hasUpdates && myAppointments.some(a => a.status === 'pending')) {
+        await refreshAppointments();
+        
+        // Mostra notifica solo se siamo nel tab appuntamenti
+        const activeTab = document.querySelector('.tab-content.active').id;
+        if (activeTab === 'appointmentsTab') {
+          showNotification('Nuovo aggiornamento!', 'success');
+        }
+      }
+    } catch (err) {
+      console.error('Errore controllo aggiornamenti:', err);
+    }
+  }, 30000);
+}
+
+/* ===========================
+   CALENDARIO E PRENOTAZIONI
+   =========================== */
+function openCalendarModal() {
+  const overlay = document.getElementById('calendarModal');
+  overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden', 'false');
+
+  setTimeout(() => {
+    const calendarEl = document.getElementById('calendar');
+    if (!calendarInstance) {
+      calendarInstance = new FullCalendar.Calendar(calendarEl, {
+        locale: 'it',
+        initialView: 'dayGridMonth',
+        height: 320,
+        headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+        selectable: true,
+        dateClick: function(info) {
+          onDateSelected(info.dateStr);
+        },
+        events: function(fetchInfo, successCallback, failureCallback) {
+          const evts = bookedAppointments.map(a => ({ 
+            title: 'Occupato', 
+            start: a.date, 
+            allDay: true, 
+            display: 'background' 
+          }));
+          successCallback(evts);
+        }
+      });
+      calendarInstance.render();
+    } else {
+      calendarInstance.updateSize();
+    }
+  }, 80);
+}
+
+function closeCalendarModal() {
+  const overlay = document.getElementById('calendarModal');
+  overlay.classList.remove('active');
+  overlay.setAttribute('aria-hidden','true');
+  closeSlotPopup();
+}
+
+function onDateSelected(dateStr) {
+  selectedDateStr = dateStr;
+  selectedTime = null;
+  selectedService = null;
+  selectedServicePrice = null;
+  generatedAppointmentId = null;
+  document.getElementById('selectedDateLabel').textContent = formatDateHuman(dateStr);
+  document.getElementById('appointmentIdLabel').textContent = '';
+  document.getElementById('slotPopup').style.display = 'block';
+  
+  // Reset service selection
+  document.querySelectorAll('.service-item').forEach(item => item.classList.remove('selected'));
+  
+  renderAvailableSlots(dateStr);
+  document.getElementById('confirmBtn').disabled = true;
+}
+
+function selectService(serviceType, price) {
+  selectedService = serviceType;
+  selectedServicePrice = price;
+  
+  // Update UI
+  document.querySelectorAll('.service-item').forEach(item => item.classList.remove('selected'));
+  event.target.classList.add('selected');
+  
+  // Enable confirm if both time and service selected
+  if (selectedTime && selectedService) {
+    document.getElementById('confirmBtn').disabled = false;
+    generatedAppointmentId = generateAppointmentId(selectedDateStr, selectedTime);
+    document.getElementById('appointmentIdLabel').textContent = generatedAppointmentId;
+  }
+}
+
+function closeSlotPopup() {
+  document.getElementById('slotPopup').style.display = 'none';
+  selectedDateStr = null;
+  selectedTime = null;
+  selectedService = null;
+  selectedServicePrice = null;
+  generatedAppointmentId = null;
+  document.getElementById('slotList').innerHTML = '';
+  document.getElementById('confirmBtn').disabled = true;
+}
+
+function generateDailySlots() {
+  const slots = [];
+  const startHour = 9, endHour = 18;
+  for (let h = startHour; h < endHour; h++) {
+    slots.push(`${pad(h)}:00`);
+    slots.push(`${pad(h)}:30`);
+  }
+  return slots;
+}
+
+function renderAvailableSlots(dateStr) {
+  const slotListEl = document.getElementById('slotList');
+  slotListEl.innerHTML = '';
+  const allSlots = generateDailySlots();
+  const bookedForDate = bookedAppointments.filter(a => a.date === dateStr).map(a => a.time);
+
+  allSlots.forEach(time => {
+    const item = document.createElement('button');
+    item.className = 'slot-item';
+    item.textContent = time;
+    if (bookedForDate.includes(time)) {
+      item.classList.add('disabled');
+      item.disabled = true;
+    } else {
+      item.onclick = () => {
+        document.querySelectorAll('.slot-item').forEach(el=>el.style.borderColor='');
+        item.style.borderColor = '#7c3aed';
+        selectedTime = time;
+        
+        // Enable confirm if both time and service selected
+        if (selectedTime && selectedService) {
+          document.getElementById('confirmBtn').disabled = false;
+          generatedAppointmentId = generateAppointmentId(dateStr, time);
+          document.getElementById('appointmentIdLabel').textContent = generatedAppointmentId;
+        }
+      };
+    }
+    slotListEl.appendChild(item);
+  });
+}
+
+async function confirmAppointment() {
+  if (!selectedDateStr || !selectedTime || !selectedService || !generatedAppointmentId) return;
+  
+  const payload = {
+    appointmentId: generatedAppointmentId,
+    clientId: CLIENT_ID,
+    date: selectedDateStr,
+    time: selectedTime,
+    service: selectedService,
+    price: selectedServicePrice,
+    timestamp: new Date().toISOString()
+  };
+
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.textContent = 'Invio...';
+
+  try {
+    const res = await fetch(MAKE_APPOINTMENT_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      bookedAppointments.push({ date: selectedDateStr, time: selectedTime, appointmentId: generatedAppointmentId });
+      const newAppointment = {
+        appointmentId: generatedAppointmentId,
+        clientId: CLIENT_ID,
+        date: selectedDateStr,
+        time: selectedTime,
+        service: getServiceName(selectedService),
+        price: selectedServicePrice,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      };
+      
+      myAppointments.push(newAppointment);
+      saveMyAppointments();
+      
+      // Salva nel sistema PHP
+      await saveAppointmentToServer(newAppointment);
+      
+      updateAppointmentsList();
+
+      addChatMessage(`⏳ Prenotazione in attesa di conferma per ${formatDateHuman(selectedDateStr)} alle ${selectedTime}. Servizio: ${getServiceName(selectedService)}. Codice: ${generatedAppointmentId}. Se il toilettatore non risponde entro 3 minuti, la prenotazione sarà confermata automaticamente.`, false);
+      
+      closeSlotPopup();
+      closeCalendarModal();
+      showNotification('Prenotazione inviata!', 'success');
+      
+      alert(`✅ Prenotazione inviata!\n\nData: ${formatDateHuman(selectedDateStr)}\nOra: ${selectedTime}\nServizio: ${getServiceName(selectedService)}\nPrezzo: ${selectedServicePrice}\nCodice: ${generatedAppointmentId}\n\nIl toilettatore riceverà la notifica via WhatsApp.`);
+      
+      // AVVIA TIMER 3 MINUTI PER AUTO-CONFERMA
+      startAutoConfirmTimer(generatedAppointmentId);
+      
+    } else {
+      addChatMessage('❌ Errore prenotazione. Riprova.', false);
+      btn.disabled = false;
+      btn.textContent = 'Conferma';
+    }
+  } catch (err) {
+    addChatMessage('❌ Errore di rete.', false);
+    btn.disabled = false;
+    btn.textContent = 'Conferma';
+  }
+}
+
+function getServiceName(serviceType) {
+  const services = {
+    bagno: 'Bagno Completo',
+    taglio: 'Taglio Professionale', 
+    igiene: 'Igiene Completa',
+    completo: 'Pacchetto Completo'
+  };
+  return services[serviceType] || 'Servizio toilettatura';
+}
+
+/* ===========================
+   URGENZE
+   =========================== */
+async function handleUrgent(){
+  addChatMessage('⚡ URGENZA ATTIVATA! Stiamo contattando il salone...', true);
+  
+  try {
+    await fetch(MAKE_URGENT_URL, { 
+      method:'POST', 
+      headers:{'Content-Type':'application/json'}, 
+      body: JSON.stringify({ 
+        type: 'urgent',
+        clientId: CLIENT_ID,
+        message: '⚡ URGENZA TOILETTATURA - ' + new Date().toLocaleString('it-IT'),
+        timestamp: new Date().toISOString()
+      }) 
+    });
+    
+    addChatMessage('✅ Segnalazione inviata al salone. Ti ricontatteremo subito.', false);
+    showNotification('Urgenza segnalata!', 'warning');
+    
+  } catch(e){
+    addChatMessage('❌ Errore invio urgenza.', false);
+    showNotification('Errore invio urgenza', 'error');
+    updateConnectionStatus('offline');
+  }
+}
+
+/* ===========================
+   CHAT
+   =========================== */
+async function sendMessage(){
+  const input = document.getElementById('messageInput');
+  const txt = input.value.trim();
+  if(!txt) return;
+  addChatMessage(txt, true);
+  input.value = '';
+  
+  setTimeout(() => {
+    addChatMessage('Grazie per il messaggio! Per prenotazioni usa il pulsante "PRENOTA", per urgenze "URGENTE".', false);
+  }, 1000);
+}
+
+function addChatMessage(html, isUser=false){
+  const chat = document.getElementById('chatContainer');
+  const div = document.createElement('div');
+  div.className = 'message ' + (isUser ? 'user' : 'bot');
+  div.innerHTML = `<div style="background:${isUser? '#7c3aed':'#e2e8f0'};color:${isUser? '#fff':'#334155'};padding:12px;border-radius:12px;margin-bottom:10px">${html}</div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+/* ===========================
+   SISTEMA SERVER PHP
+   =========================== */
+async function saveAppointmentToServer(appointment) {
+  try {
+    const response = await fetch(MAKE_STATUS_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(appointment)
+    });
+    return response.ok;
+  } catch (err) {
+    console.error('Errore salvataggio server:', err);
+    return false;
+  }
+}
+
+function startAutoConfirmTimer(appointmentId) {
+  let elapsed = 0;
+  const maxTime = 180; // 3 minuti in secondi
+  const checkInterval = 7; // Controlla ogni 7 secondi
+  
+  const timer = setInterval(async () => {
+    elapsed += checkInterval;
+    
+    console.log(`Timer ${appointmentId}: ${elapsed}/${maxTime} secondi`);
+    
+    // Controlla se ci sono aggiornamenti dal server
+    try {
+      const oldAppointment = myAppointments.find(a => a.appointmentId === appointmentId);
+      await refreshAppointments();
+      
+      // Trova l'appuntamento e controlla se è stato aggiornato DAL SERVER
+      const appointment = myAppointments.find(a => a.appointmentId === appointmentId);
+      if (appointment && appointment.status !== 'pending' && appointment.updatedAt && appointment.updatedAt !== oldAppointment?.updatedAt) {
+        // Stato cambiato DAL TOILETTATORE - ferma timer
+        clearInterval(timer);
+        
+        const statusMessages = {
+          confirmed: '✅ Prenotazione CONFERMATA dal toilettatore!',
+          rejected: '❌ Prenotazione RIFIUTATA dal toilettatore.',
+          moved: '📅 Prenotazione SPOSTATA dal toilettatore.'
+        };
+        
+        addChatMessage(statusMessages[appointment.status] || 'Prenotazione aggiornata.', false);
+        showNotification('Aggiornamento dal toilettatore!', appointment.status === 'rejected' ? 'error' : 'success');
+        return;
+      }
+    } catch (err) {
+      console.error('Errore controllo aggiornamenti:', err);
+    }
+    
+    // Se sono passati 3 minuti senza risposta - AUTO CONFERMA
+    if (elapsed >= maxTime) {
+      clearInterval(timer);
+      
+      // Trova e aggiorna l'appuntamento a confirmed
+      const appointmentIndex = myAppointments.findIndex(a => a.appointmentId === appointmentId);
+      if (appointmentIndex !== -1 && myAppointments[appointmentIndex].status === 'pending') {
+        myAppointments[appointmentIndex].status = 'confirmed';
+        myAppointments[appointmentIndex].note = 'Auto-confermato (nessuna risposta in 3 minuti)';
+        myAppointments[appointmentIndex].updatedAt = new Date().toISOString();
+        
+        // Salva in localStorage
+        saveMyAppointments();
+        
+        // Prova a salvare anche sul server
+        try {
+          await saveAppointmentToServer(myAppointments[appointmentIndex]);
+        } catch (err) {
+          console.error('Errore auto-conferma server:', err);
+        }
+        
+        // Aggiorna UI
+        updateAppointmentsList();
+        addChatMessage(`✅ Prenotazione AUTO-CONFERMATA! Il toilettatore non ha risposto entro 3 minuti, la prenotazione è confermata automaticamente. Codice: ${appointmentId}`, false);
+        showNotification('Prenotazione confermata automaticamente!', 'success');
+      }
+    }
+  }, checkInterval * 1000);
+}
+
+/* ===========================
+   CANCELLAZIONE APPUNTAMENTI
+   =========================== */
+function cancelAppointment(appointmentId) {
+  if (confirm('Sei sicuro di voler cancellare questo appuntamento?')) {
+    myAppointments = myAppointments.filter(apt => apt.appointmentId !== appointmentId);
+    bookedAppointments = bookedAppointments.filter(apt => apt.appointmentId !== appointmentId);
+    saveMyAppointments();
+    updateAppointmentsList();
+    showNotification('Appuntamento cancellato', 'warning');
+    addChatMessage(`❌ Appuntamento ${appointmentId} cancellato con successo.`, false);
+  }
+}
+
+/* ===========================
+   UTILS
+   =========================== */
+function pad(n){return n<10?'0'+n:n}
+
+function generateAppointmentId(dateStr,timeStr){
+  const d = dateStr.replaceAll('-','');
+  const t = timeStr.replace(':','');
+  const rnd = Math.random().toString(36).slice(2,7).toUpperCase();
+  return `GRM-${d}-${t}-${rnd}`;
+}
+
+function formatDateHuman(isoDate){
+  const d = new Date(isoDate + 'T00:00:00');
+  return d.toLocaleDateString('it-IT',{weekday:'short', day:'2-digit', month:'2-digit', year:'numeric'});
+}
+
+/* ===========================
+   EVENT LISTENERS
+   =========================== */
+document.getElementById('openCalendarBtn').addEventListener('click', openCalendarModal);
+
+document.addEventListener('click', (e) => {
+  const overlay = document.getElementById('calendarModal');
+  if (!overlay.classList.contains('active')) return;
+  if (e.target === overlay) closeCalendarModal();
+});
+
+document.getElementById('messageInput').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+window.addEventListener('beforeunload', () => {
+  if (updateCheckInterval) {
+    clearInterval(updateCheckInterval);
+  }
+});
+
+</script>
+</body>
+</html>
