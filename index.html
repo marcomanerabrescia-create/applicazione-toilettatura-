@@ -352,7 +352,7 @@ function updateAppointmentsList() {
 function startUpdateChecking() {
   updateCheckInterval = setInterval(async () => {
     try {
-      const hasUpdates = Math.random() > 0.95;
+     const hasUpdates = false;
       if (hasUpdates && myAppointments.some(a => a.status === 'pending')) {
         await refreshAppointments();
         const activeTab = document.querySelector('.tab-content.active').id;
