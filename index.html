@@ -240,8 +240,6 @@ let bookedAppointments = [];
    INIZIALIZZAZIONE
    =========================== */
 document.addEventListener('DOMContentLoaded', function() {
- const MAKE_CONFIRM_URL = "https://hook.eu2.make.com/du02jwl9ycskoi7vohh0t6o8vsfr78rj";
-
   startUpdateChecking();
   loadMyAppointments();
   updateConnectionStatus('online');
@@ -424,7 +422,7 @@ function onDateSelected(dateStr) {
 
   renderAvailableSlots(dateStr);
   document.getElementById('confirmBtn').disabled = true;
-} 
+}
 
 function selectService(serviceType, price) {
   selectedService = serviceType;
@@ -511,21 +509,7 @@ async function confirmAppointment() {
   btn.textContent = 'Invio...';
 
   try {
-const res = await fetch("https://hook.eu2.make.com/du02jwl9ycskoi7vohh0t6o8vsfr78rj", {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    idAppuntamento: generatedAppointmentId,
-    data: selectedDateStr,
-    ora: selectedTime,
-    stato: "confermato",
-    servizio: selectedService,
-    prezzo: selectedServicePrice
-  })
-});
-
-  
- 
+    const res = await fetch('https://hook.eu2.make.com/du02jwl9ycskoi7vohh0t6o8vsfr78rj', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify(payload)
