@@ -511,14 +511,19 @@ async function confirmAppointment() {
   btn.textContent = 'Invio...';
 
   try {
-fetch("https://hook.eu2.make.com/du02jwl9ycskoi7vohh0t6o8vsfr78rj", {
+const res = await fetch("https://hook.eu2.make.com/du02jwl9ycskoi7vohh0t6o8vsfr78rj", {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    idAppuntamento: "APP-20250916-1130-0IFJR",
-    data: "2025-09-16",
-    ora: "11:30",
-    stato: "confermato"
+    idAppuntamento: generatedAppointmentId,
+    data: selectedDateStr,
+    ora: selectedTime,
+    stato: "confermato",
+    servizio: selectedService,
+    prezzo: selectedServicePrice
   })
 });
+
   
  
       method: 'POST',
