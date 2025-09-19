@@ -254,11 +254,11 @@ function switchTab(tabName) {
   event.target.classList.add('active');
   document.getElementById(tabName + 'Tab').classList.add('active');
 
- if (tabName === 'appointments') {
-   updateAppointmentsList();
-}
+  if (tabName === 'appointments') {
+    refreshAppointments();
   }
 }
+
 
 /* ===========================
    SISTEMA NOTIFICHE
