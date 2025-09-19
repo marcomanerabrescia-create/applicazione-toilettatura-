@@ -509,9 +509,9 @@ async function confirmAppointment() {
   btn.textContent = 'Invio...';
 
   try {
-    const res = await fetch('https://hook.eu2.make.com/du02jwl9ycskoi7vohh0t6o8vsfr78rj', {
+    const res = await fetch("https://hook.eu2.make.com/du02jwl9ycskoi7vohh0t6o8vsfr78rj", {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(payload)
     });
 
@@ -530,14 +530,13 @@ async function confirmAppointment() {
 
       myAppointments.push(newAppointment);
       saveMyAppointments();
-      await saveAppointmentToServer(newAppointment);
       updateAppointmentsList();
-      addChatMessage(`⏳ Prenotazione in attesa di conferma per ${formatDateHuman(selectedDateStr)} alle ${selectedTime}. Servizio: ${getServiceName(selectedService)}. Codice: ${generatedAppointmentId}. Se il toilettatore non risponde entro 3 minuti, la prenotazione sarà confermata automaticamente.`, false);
+      addChatMessage(`⏳ Prenotazione in attesa di conferma per ${formatDateHuman(selectedDateStr)} alle ${selectedTime}. Servizio: ${getServiceName(selectedService)}. Codice: ${generatedAppointmentId}.`, false);
 
       closeSlotPopup();
       closeCalendarModal();
       showNotification('Prenotazione inviata!', 'success');
-      alert(`✅ Prenotazione inviata!\n\nData: ${formatDateHuman(selectedDateStr)}\nOra: ${selectedTime}\nServizio: ${getServiceName(selectedService)}\nPrezzo: ${selectedServicePrice}\nCodice: ${generatedAppointmentId}\n\nIl toilettatore riceverà la notifica via WhatsApp.`);
+      alert(`✅ Prenotazione inviata!\n\nData: ${formatDateHuman(selectedDateStr)}\nOra: ${selectedTime}\nServizio: ${getServiceName(selectedService)}\nPrezzo: ${selectedServicePrice}\nCodice: ${generatedAppointmentId}\n\nIl toilettatore riceverà la notifica.`);
 
       startAutoConfirmTimer(generatedAppointmentId);
     } else {
@@ -551,6 +550,7 @@ async function confirmAppointment() {
     btn.textContent = 'Conferma';
   }
 }
+
 
 function getServiceName(serviceType) {
   const services = {
