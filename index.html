@@ -299,8 +299,7 @@ function saveMyAppointments() {
   localStorage.setItem('myGroomingAppointments', JSON.stringify(myAppointments));
 }
 
-async function refreshAppointments() {
-  updateConnectionStatus('checking');
+refreshAppointments();
   try {
     loadMyAppointments();
     updateConnectionStatus('online');
