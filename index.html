@@ -511,7 +511,16 @@ async function confirmAppointment() {
   btn.textContent = 'Invio...';
 
   try {
-    const res = await fetch('https://hook.eu2.make.com/du02jwl9ycskoi7vohh0t6o8vsfr78rj', {
+fetch("https://hook.eu2.make.com/du02jwl9ycskoi7vohh0t6o8vsfr78rj", {
+  body: JSON.stringify({
+    idAppuntamento: "APP-20250916-1130-0IFJR",
+    data: "2025-09-16",
+    ora: "11:30",
+    stato: "confermato"
+  })
+});
+  
+ 
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify(payload)
